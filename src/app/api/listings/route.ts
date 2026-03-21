@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
         unit: body.unit,
         country_origin: body.country_origin,
         grade: body.grade || null,
-        status: body.status || 'draft',
+        status: body.status || 'active',
         images: body.images || [],
       })
       .select()
