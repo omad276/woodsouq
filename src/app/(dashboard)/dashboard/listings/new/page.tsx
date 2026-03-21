@@ -36,6 +36,8 @@ export default function NewListingPage() {
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [countryOrigin, setCountryOrigin] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Redirect buyers away from this page
@@ -59,12 +61,45 @@ export default function NewListingPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setSubmitError('');
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const formData = new FormData(e.currentTarget);
 
-    // Redirect to listings page
-    router.push('/dashboard/listings');
+    const listingData = {
+      listing_type: listingType,
+      title: formData.get('title'),
+      description: formData.get('description'),
+      wood_type: formData.get('wood_type'),
+      category: formData.get('category'),
+      price: Number(formData.get('price')),
+      quantity: Number(formData.get('quantity')),
+      unit: formData.get('unit'),
+      country_origin: countryOrigin,
+      grade: formData.get('grade') || null,
+      status: formData.get('status') || 'draft',
+      images: images,
+    };
+
+    try {
+      const response = await fetch('/api/listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(listingData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setSubmitError(data.error || 'Failed to create listing');
+        setLoading(false);
+        return;
+      }
+
+      router.push('/dashboard/listings');
+    } catch {
+      setSubmitError('Failed to create listing. Please try again.');
+      setLoading(false);
+    }
   };
 
   const handleImageUpload = () => {
@@ -275,6 +310,8 @@ export default function NewListingPage() {
                     <SearchableCountrySelect
                       name="country_origin"
                       placeholder="Search countries..."
+                      value={countryOrigin}
+                      onValueChange={setCountryOrigin}
                       required
                     />
                   </div>
@@ -382,6 +419,11 @@ export default function NewListingPage() {
                   </Select>
                 </div>
 
+                {submitError && (
+                  <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md mb-2">
+                    {submitError}
+                  </div>
+                )}
                 <div className="flex flex-col gap-2">
                   <Button
                     type="submit"
