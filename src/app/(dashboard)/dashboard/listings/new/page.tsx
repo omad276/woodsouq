@@ -65,19 +65,50 @@ export default function NewListingPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     setSubmitError('');
 
+    // Validate required fields
     const formData = new FormData(e.currentTarget);
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string;
+    const price = formData.get('price') as string;
+    const quantity = formData.get('quantity') as string;
+
+    if (!title || !description || !price || !quantity) {
+      setSubmitError('Please fill in all required fields');
+      return;
+    }
+
+    if (!woodType) {
+      setSubmitError('Please select a wood type');
+      return;
+    }
+
+    if (!category) {
+      setSubmitError('Please select a category');
+      return;
+    }
+
+    if (!unit) {
+      setSubmitError('Please select a unit');
+      return;
+    }
+
+    if (!countryOrigin) {
+      setSubmitError('Please select a country of origin');
+      return;
+    }
+
+    setLoading(true);
 
     const listingData = {
       listing_type: listingType,
-      title: formData.get('title'),
-      description: formData.get('description'),
+      title: title.trim(),
+      description: description.trim(),
       wood_type: woodType,
       category: category,
-      price: Number(formData.get('price')),
-      quantity: Number(formData.get('quantity')),
+      price: Number(price),
+      quantity: Number(quantity),
       unit: unit,
       country_origin: countryOrigin,
       grade: grade || null,
@@ -101,7 +132,8 @@ export default function NewListingPage() {
       }
 
       router.push('/dashboard/listings');
-    } catch {
+    } catch (err) {
+      console.error('Submit error:', err);
       setSubmitError('Failed to create listing. Please try again.');
       setLoading(false);
     }

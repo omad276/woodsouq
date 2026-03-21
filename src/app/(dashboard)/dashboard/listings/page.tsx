@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -111,6 +112,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function ListingsPage() {
+  const router = useRouter();
   const { profile } = useAuth();
   const [listings, setListings] = useState<(Listing & { views?: number })[]>(mockListings);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -227,21 +229,24 @@ export default function ListingsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/marketplace/${listing.id}`}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/listings/${listing.id}/edit`}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                          </Link>
+                        <DropdownMenuItem
+                          onSelect={() => router.push(`/marketplace/${listing.id}`)}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          View
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => handleDelete(listing.id)}
+                          onSelect={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-600 cursor-pointer"
+                          onSelect={(e) => {
+                            e.preventDefault();
+                            handleDelete(listing.id);
+                          }}
                           disabled={deleting === listing.id}
                         >
                           {deleting === listing.id ? (
