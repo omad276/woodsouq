@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { COUNTRIES } from '@/types';
 
@@ -35,9 +35,23 @@ export function SearchableCountrySelect({
     []
   );
 
-  const selectedOption = value
-    ? countryOptions.find((opt) => opt.value === value) || null
-    : null;
+  const [selectedOption, setSelectedOption] = useState<CountryOption | null>(null);
+
+  // Sync selectedOption with value prop
+  useEffect(() => {
+    if (value) {
+      const option = countryOptions.find((opt) => opt.value === value);
+      setSelectedOption(option || null);
+    } else {
+      setSelectedOption(null);
+    }
+  }, [value, countryOptions]);
+
+  const handleChange = (option: unknown) => {
+    const selected = option as CountryOption | null;
+    setSelectedOption(selected);
+    onValueChange?.(selected?.value || '');
+  };
 
   return (
     <>
@@ -45,17 +59,14 @@ export function SearchableCountrySelect({
         <input
           type="hidden"
           name={name}
-          value={value || ''}
+          value={selectedOption?.value || ''}
           required={required}
         />
       )}
       <Select
         options={countryOptions}
         value={selectedOption}
-        onChange={(option: unknown) => {
-          const selected = option as CountryOption | null;
-          onValueChange?.(selected?.value || '');
-        }}
+        onChange={handleChange}
         placeholder={placeholder}
         isClearable
         isSearchable
@@ -69,6 +80,10 @@ export function SearchableCountrySelect({
           menuPortal: (base: Record<string, unknown>) => ({
             ...base,
             zIndex: 9999,
+          }),
+          singleValue: (base: Record<string, unknown>) => ({
+            ...base,
+            color: 'inherit',
           }),
         }}
       />

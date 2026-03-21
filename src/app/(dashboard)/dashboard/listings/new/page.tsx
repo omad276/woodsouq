@@ -38,6 +38,11 @@ export default function NewListingPage() {
   const [uploadError, setUploadError] = useState('');
   const [countryOrigin, setCountryOrigin] = useState('');
   const [submitError, setSubmitError] = useState('');
+  const [woodType, setWoodType] = useState('');
+  const [category, setCategory] = useState('');
+  const [unit, setUnit] = useState('');
+  const [grade, setGrade] = useState('');
+  const [status, setStatus] = useState('draft');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Redirect buyers away from this page
@@ -69,14 +74,14 @@ export default function NewListingPage() {
       listing_type: listingType,
       title: formData.get('title'),
       description: formData.get('description'),
-      wood_type: formData.get('wood_type'),
-      category: formData.get('category'),
+      wood_type: woodType,
+      category: category,
       price: Number(formData.get('price')),
       quantity: Number(formData.get('quantity')),
-      unit: formData.get('unit'),
+      unit: unit,
       country_origin: countryOrigin,
-      grade: formData.get('grade') || null,
-      status: formData.get('status') || 'draft',
+      grade: grade || null,
+      status: status,
       images: images,
     };
 
@@ -213,7 +218,7 @@ export default function NewListingPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="wood_type">Wood Type</Label>
-                    <Select name="wood_type" required>
+                    <Select value={woodType} onValueChange={setWoodType} required>
                       <SelectTrigger>
                         <SelectValue placeholder="Select wood type" />
                       </SelectTrigger>
@@ -229,7 +234,7 @@ export default function NewListingPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Select name="category" required>
+                    <Select value={category} onValueChange={setCategory} required>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
@@ -281,14 +286,14 @@ export default function NewListingPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="unit">Unit</Label>
-                    <Select name="unit" required>
+                    <Select value={unit} onValueChange={setUnit} required>
                       <SelectTrigger>
                         <SelectValue placeholder="Select unit" />
                       </SelectTrigger>
                       <SelectContent>
-                        {UNITS.map((unit) => (
-                          <SelectItem key={unit} value={unit}>
-                            {unit}
+                        {UNITS.map((u) => (
+                          <SelectItem key={u} value={u}>
+                            {u}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -318,14 +323,14 @@ export default function NewListingPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="grade">Grade (Optional)</Label>
-                    <Select name="grade">
+                    <Select value={grade} onValueChange={setGrade}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select grade" />
                       </SelectTrigger>
                       <SelectContent>
-                        {GRADES.map((grade) => (
-                          <SelectItem key={grade} value={grade}>
-                            {grade}
+                        {GRADES.map((g) => (
+                          <SelectItem key={g} value={g}>
+                            {g}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -408,7 +413,7 @@ export default function NewListingPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Status</Label>
-                  <Select name="status" defaultValue="draft">
+                  <Select value={status} onValueChange={setStatus}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

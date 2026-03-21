@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,8 +19,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PlusCircle, MoreHorizontal, Pencil, Eye, Trash2 } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Pencil, Eye, Trash2, Loader2 } from 'lucide-react';
 import type { Listing } from '@/types';
+import { useAuth } from '@/components/auth';
 
 // Mock data
 const mockListings: (Listing & { views: number })[] = [
@@ -110,7 +111,51 @@ const statusColors: Record<string, string> = {
 };
 
 export default function ListingsPage() {
-  const [listings] = useState(mockListings);
+  const { profile } = useAuth();
+  const [listings, setListings] = useState<(Listing & { views?: number })[]>(mockListings);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  // Fetch real listings from API
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await fetch('/api/listings?seller_id=me');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && data.data.length > 0) {
+            setListings(data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
+      }
+    };
+    if (profile) {
+      fetchListings();
+    }
+  }, [profile]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this listing?')) {
+      return;
+    }
+    setDeleting(id);
+    try {
+      const response = await fetch(`/api/listings/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setListings(listings.filter((l) => l.id !== id));
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to delete listing');
+      }
+    } catch {
+      alert('Failed to delete listing');
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -170,7 +215,7 @@ export default function ListingsPage() {
                       {listing.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{listing.views.toLocaleString()}</TableCell>
+                  <TableCell>{(listing.views || 0).toLocaleString()}</TableCell>
                   <TableCell>
                     {new Date(listing.created_at).toLocaleDateString()}
                   </TableCell>
@@ -194,8 +239,16 @@ export default function ListingsPage() {
                             Edit
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDelete(listing.id)}
+                          disabled={deleting === listing.id}
+                        >
+                          {deleting === listing.id ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="mr-2 h-4 w-4" />
+                          )}
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
