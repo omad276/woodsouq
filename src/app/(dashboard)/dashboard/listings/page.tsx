@@ -117,11 +117,11 @@ export default function ListingsPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="overflow-visible">
         <CardHeader>
           <CardTitle>All Listings ({listings.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-visible">
           {listings.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">You don&apos;t have any listings yet.</p>
@@ -174,31 +174,31 @@ export default function ListingsPage() {
                       {new Date(listing.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
+                      <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="relative z-10">
                             <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Open menu</span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="z-50">
                           <DropdownMenuItem
-                            onSelect={() => router.push(`/marketplace/${listing.id}`)}
+                            className="cursor-pointer"
+                            onClick={() => router.push(`/marketplace/${listing.id}`)}
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             View
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onSelect={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
+                            className="cursor-pointer"
+                            onClick={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600 cursor-pointer"
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              handleDelete(listing.id);
-                            }}
+                            onClick={() => handleDelete(listing.id)}
                             disabled={deleting === listing.id}
                           >
                             {deleting === listing.id ? (
