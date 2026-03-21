@@ -29,10 +29,11 @@ export function SearchableCountrySelect({
   const currentValue = value !== undefined ? value : internalValue;
 
   const filteredCountries = React.useMemo(() => {
-    if (!search) return COUNTRIES;
-    const lowerSearch = search.toLowerCase();
-    return COUNTRIES.filter((country) =>
-      country.toLowerCase().includes(lowerSearch)
+    const countriesList = [...COUNTRIES];
+    const trimmedSearch = search.trim().toLowerCase();
+    if (!trimmedSearch) return countriesList;
+    return countriesList.filter((country) =>
+      country.toLowerCase().includes(trimmedSearch)
     );
   }, [search]);
 
