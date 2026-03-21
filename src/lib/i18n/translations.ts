@@ -155,6 +155,7 @@ export const translations = {
     // Supplier Card
     viewProfile: 'View Profile',
     productsAvailable: 'products available',
+    reviews: 'reviews',
 
     // General
     loading: 'Loading...',
@@ -331,6 +332,7 @@ export const translations = {
     // Supplier Card
     viewProfile: 'عرض الملف',
     productsAvailable: 'منتجات متاحة',
+    reviews: 'تقييمات',
 
     // General
     loading: 'جاري التحميل...',

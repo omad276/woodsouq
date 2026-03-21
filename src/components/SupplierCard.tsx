@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Star, Building2 } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n';
 import type { Supplier } from '@/types';
 
 interface SupplierCardProps {
@@ -12,6 +13,7 @@ interface SupplierCardProps {
 }
 
 export function SupplierCard({ supplier }: SupplierCardProps) {
+  const { t } = useLanguage();
   const logoUrl = supplier.logo_url || '/images/placeholder-company.jpg';
 
   return (
@@ -47,7 +49,7 @@ export function SupplierCard({ supplier }: SupplierCardProps) {
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                   <span>{supplier.rating.toFixed(1)}</span>
                   <span className="text-muted-foreground">
-                    ({supplier.review_count} reviews)
+                    ({supplier.review_count} {t('reviews')})
                   </span>
                 </div>
               )}
