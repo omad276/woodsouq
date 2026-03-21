@@ -37,6 +37,7 @@ export interface Listing {
   grade: string | null;
   status: ListingStatus;
   images: string[];
+  view_count: number;
   created_at: string;
   // Joined data
   seller?: User;

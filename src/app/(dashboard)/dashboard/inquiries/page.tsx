@@ -1,97 +1,96 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Search, Mail, Check, Clock } from 'lucide-react';
+import { Search, Mail, Check, Clock, Loader2 } from 'lucide-react';
+import { useAuth } from '@/components/auth';
+import { createClient } from '@/lib/supabase/client';
 
 interface Inquiry {
   id: string;
   sender_name: string;
   sender_email: string;
-  listing_id: string;
-  listing_title: string;
+  listing_id: string | null;
+  listing_title?: string;
   message: string;
   is_read: boolean;
   created_at: string;
+  listing?: {
+    title: string;
+  };
 }
 
-const mockInquiries: Inquiry[] = [
-  {
-    id: '1',
-    sender_name: 'John Smith',
-    sender_email: 'john.smith@example.com',
-    listing_id: '1',
-    listing_title: 'Premium Oak Lumber - Kiln Dried',
-    message: 'Hi, I am interested in purchasing 50m³ of your oak lumber. Can you provide a quote for delivery to the UK? We are a furniture manufacturing company and looking for a long-term supplier.',
-    is_read: false,
-    created_at: '2024-03-15T14:30:00Z',
-  },
-  {
-    id: '2',
-    sender_name: 'ABC Construction Ltd.',
-    sender_email: 'procurement@abcconstruction.com',
-    listing_id: '2',
-    listing_title: 'Swedish Pine Boards',
-    message: 'Can you provide a quote for bulk orders? We need around 200m³ for a residential development project. Looking for delivery within 4 weeks.',
-    is_read: false,
-    created_at: '2024-03-15T10:15:00Z',
-  },
-  {
-    id: '3',
-    sender_name: 'Maria Garcia',
-    sender_email: 'maria@designstudio.es',
-    listing_id: '3',
-    listing_title: 'Birch Plywood Sheets',
-    message: 'Do you ship to Spain? Looking for plywood for a furniture project. Need approximately 100 sheets.',
-    is_read: true,
-    created_at: '2024-03-14T16:45:00Z',
-  },
-  {
-    id: '4',
-    sender_name: 'Green Building Co.',
-    sender_email: 'orders@greenbuilding.de',
-    listing_id: '2',
-    listing_title: 'Swedish Pine Boards',
-    message: 'We are looking for FSC certified timber for our eco-friendly construction projects. Can you confirm your certifications?',
-    is_read: true,
-    created_at: '2024-03-13T09:20:00Z',
-  },
-  {
-    id: '5',
-    sender_name: 'Tokyo Woodcraft',
-    sender_email: 'info@tokyowoodcraft.jp',
-    listing_id: '1',
-    listing_title: 'Premium Oak Lumber',
-    message: 'Very interested in your oak lumber. Can you ship to Japan? What are the lead times and minimum order quantities?',
-    is_read: true,
-    created_at: '2024-03-12T03:10:00Z',
-  },
-];
-
 export default function InquiriesPage() {
-  const [inquiries, setInquiries] = useState(mockInquiries);
+  const { user } = useAuth();
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Fetch inquiries from Supabase
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('inquiries')
+          .select('*, listing:listings(title)')
+          .eq('seller_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Failed to fetch inquiries:', error);
+        } else {
+          const formattedData = (data || []).map((inq) => ({
+            ...inq,
+            listing_title: inq.listing?.title || 'General Inquiry',
+          }));
+          setInquiries(formattedData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch inquiries:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInquiries();
+  }, [user]);
 
   const filteredInquiries = inquiries.filter(
     (inq) =>
       inq.sender_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inq.listing_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (inq.listing_title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       inq.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const unreadCount = inquiries.filter((i) => !i.is_read).length;
 
-  const markAsRead = (id: string) => {
-    setInquiries(
-      inquiries.map((inq) =>
-        inq.id === id ? { ...inq, is_read: true } : inq
-      )
-    );
+  const markAsRead = async (id: string) => {
+    try {
+      const supabase = createClient();
+      await supabase
+        .from('inquiries')
+        .update({ is_read: true })
+        .eq('id', id);
+
+      setInquiries(
+        inquiries.map((inq) =>
+          inq.id === id ? { ...inq, is_read: true } : inq
+        )
+      );
+    } catch (error) {
+      console.error('Failed to mark as read:', error);
+    }
   };
 
   const formatDate = (dateStr: string) => {
@@ -106,6 +105,14 @@ export default function InquiriesPage() {
     if (days < 7) return `${days} days ago`;
     return date.toLocaleDateString();
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-wood" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -140,42 +147,49 @@ export default function InquiriesPage() {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="divide-y max-h-[600px] overflow-y-auto">
-                {filteredInquiries.map((inquiry) => (
-                  <button
-                    key={inquiry.id}
-                    className={`w-full text-left p-4 hover:bg-muted/50 transition-colors ${
-                      selectedInquiry?.id === inquiry.id ? 'bg-muted' : ''
-                    } ${!inquiry.is_read ? 'bg-wood/5' : ''}`}
-                    onClick={() => {
-                      setSelectedInquiry(inquiry);
-                      if (!inquiry.is_read) markAsRead(inquiry.id);
-                    }}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className={`font-medium truncate ${!inquiry.is_read ? 'text-wood-dark' : ''}`}>
-                            {inquiry.sender_name}
+              {filteredInquiries.length === 0 ? (
+                <div className="p-8 text-center">
+                  <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No inquiries yet</p>
+                </div>
+              ) : (
+                <div className="divide-y max-h-[600px] overflow-y-auto">
+                  {filteredInquiries.map((inquiry) => (
+                    <button
+                      key={inquiry.id}
+                      className={`w-full text-left p-4 hover:bg-muted/50 transition-colors ${
+                        selectedInquiry?.id === inquiry.id ? 'bg-muted' : ''
+                      } ${!inquiry.is_read ? 'bg-wood/5' : ''}`}
+                      onClick={() => {
+                        setSelectedInquiry(inquiry);
+                        if (!inquiry.is_read) markAsRead(inquiry.id);
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className={`font-medium truncate ${!inquiry.is_read ? 'text-wood-dark' : ''}`}>
+                              {inquiry.sender_name}
+                            </p>
+                            {!inquiry.is_read && (
+                              <span className="w-2 h-2 rounded-full bg-wood flex-shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {inquiry.listing_title}
                           </p>
-                          {!inquiry.is_read && (
-                            <span className="w-2 h-2 rounded-full bg-wood flex-shrink-0" />
-                          )}
+                          <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
+                            {inquiry.message}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {inquiry.listing_title}
-                        </p>
-                        <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
-                          {inquiry.message}
-                        </p>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {formatDate(inquiry.created_at)}
+                        </span>
                       </div>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {formatDate(inquiry.created_at)}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -220,7 +234,10 @@ export default function InquiriesPage() {
                 <Separator />
 
                 <div className="flex gap-3">
-                  <Button className="bg-wood hover:bg-wood-dark">
+                  <Button
+                    className="bg-wood hover:bg-wood-dark"
+                    onClick={() => window.location.href = `mailto:${selectedInquiry.sender_email}`}
+                  >
                     <Mail className="mr-2 h-4 w-4" />
                     Reply via Email
                   </Button>
