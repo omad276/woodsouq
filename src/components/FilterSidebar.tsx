@@ -114,16 +114,16 @@ export function FilterSidebar({ type }: FilterSidebarProps) {
 
       {/* Grade */}
       <div className="space-y-2">
-        <Label>Grade</Label>
+        <Label>{t('grade')}</Label>
         <Select
           value={searchParams.get('grade') || 'all'}
           onValueChange={(v) => updateFilter('grade', v)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="All grades" />
+            <SelectValue placeholder={t('allGrades')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All grades</SelectItem>
+            <SelectItem value="all">{t('allGrades')}</SelectItem>
             {GRADES.map((grade) => (
               <SelectItem key={grade} value={grade}>
                 {grade}

@@ -82,6 +82,22 @@ export const translations = {
     seller: 'Seller',
     alreadyHaveAccount: 'Already have an account?',
 
+    // Marketplace
+    timberMarketplace: 'Timber Marketplace',
+    browseTimberSubtitle: 'Browse timber from verified suppliers worldwide',
+    showing: 'Showing',
+    listings: 'listings',
+    sortBy: 'Sort by',
+    newest: 'Newest',
+    priceLowToHigh: 'Price: Low to High',
+    priceHighToLow: 'Price: High to Low',
+    mostViewed: 'Most Viewed',
+    noTimberListings: 'No timber listings found.',
+    showingPage: 'Showing page',
+    of: 'of',
+    grade: 'Grade',
+    allGrades: 'All grades',
+
     // Filters
     filters: 'Filters',
     category: 'Category',
@@ -258,6 +274,22 @@ export const translations = {
     buyer: 'مشتري',
     seller: 'بائع',
     alreadyHaveAccount: 'لديك حساب بالفعل؟',
+
+    // Marketplace
+    timberMarketplace: 'سوق الأخشاب',
+    browseTimberSubtitle: 'تصفح الأخشاب من موردين معتمدين حول العالم',
+    showing: 'عرض',
+    listings: 'قوائم',
+    sortBy: 'ترتيب حسب',
+    newest: 'الأحدث',
+    priceLowToHigh: 'السعر: من الأقل إلى الأعلى',
+    priceHighToLow: 'السعر: من الأعلى إلى الأقل',
+    mostViewed: 'الأكثر مشاهدة',
+    noTimberListings: 'لم يتم العثور على قوائم أخشاب.',
+    showingPage: 'عرض صفحة',
+    of: 'من',
+    grade: 'الدرجة',
+    allGrades: 'جميع الدرجات',
 
     // Filters
     filters: 'التصفيات',
