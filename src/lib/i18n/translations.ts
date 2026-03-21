@@ -168,6 +168,17 @@ export const translations = {
     bio: 'Bio',
     saveChanges: 'Save Changes',
 
+    // Suppliers Page
+    supplierDirectory: 'Supplier Directory',
+    supplierDirectorySubtitle: 'Find verified timber and wood product suppliers worldwide',
+    searchSuppliers: 'Search suppliers...',
+    highestRated: 'Highest Rated',
+    mostReviews: 'Most Reviews',
+    nameAZ: 'Name A-Z',
+    noSuppliersFound: 'No suppliers found.',
+    showingSuppliers: 'Showing',
+    suppliersCount: 'suppliers',
+
     // Supplier Card
     viewProfile: 'View Profile',
     productsAvailable: 'products available',
@@ -360,6 +371,17 @@ export const translations = {
     address: 'العنوان',
     bio: 'نبذة',
     saveChanges: 'حفظ التغييرات',
+
+    // Suppliers Page
+    supplierDirectory: 'دليل الموردين',
+    supplierDirectorySubtitle: 'ابحث عن موردي الأخشاب ومنتجات الخشب المعتمدين حول العالم',
+    searchSuppliers: 'البحث عن موردين...',
+    highestRated: 'الأعلى تقييماً',
+    mostReviews: 'الأكثر تقييمات',
+    nameAZ: 'الاسم أ-ي',
+    noSuppliersFound: 'لم يتم العثور على موردين.',
+    showingSuppliers: 'عرض',
+    suppliersCount: 'موردين',
 
     // Supplier Card
     viewProfile: 'عرض الملف',
