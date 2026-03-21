@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import Select from 'react-select';
 import { COUNTRIES } from '@/types';
 
@@ -11,11 +12,6 @@ interface SearchableCountrySelectProps {
   required?: boolean;
 }
 
-const countryOptions = COUNTRIES.map((country) => ({
-  value: country,
-  label: country,
-}));
-
 export function SearchableCountrySelect({
   value,
   onValueChange,
@@ -23,6 +19,15 @@ export function SearchableCountrySelect({
   name,
   required,
 }: SearchableCountrySelectProps) {
+  const countryOptions = useMemo(
+    () =>
+      COUNTRIES.map((country) => ({
+        value: country,
+        label: country,
+      })),
+    []
+  );
+
   const selectedOption = value
     ? countryOptions.find((opt) => opt.value === value)
     : null;
