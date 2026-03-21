@@ -29,7 +29,7 @@ export function RegisterForm() {
     setLoading(true);
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('passwordMinLength'));
       setLoading(false);
       return;
     }
@@ -44,7 +44,7 @@ export function RegisterForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Registration failed');
+        setError(data.error || t('registrationFailed'));
         setLoading(false);
         return;
       }
@@ -53,7 +53,7 @@ export function RegisterForm() {
       await supabase.auth.signInWithPassword({ email, password });
       router.push('/dashboard');
     } catch {
-      setError('Registration failed. Please try again.');
+      setError(t('registrationFailedTryAgain'));
       setLoading(false);
     }
   };

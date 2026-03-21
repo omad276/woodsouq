@@ -81,6 +81,9 @@ export const translations = {
     buyer: 'Buyer',
     seller: 'Seller',
     alreadyHaveAccount: 'Already have an account?',
+    passwordMinLength: 'Password must be at least 6 characters',
+    registrationFailed: 'Registration failed',
+    registrationFailedTryAgain: 'Registration failed. Please try again.',
 
     // Marketplace
     timberMarketplace: 'Timber Marketplace',
@@ -285,6 +288,9 @@ export const translations = {
     buyer: 'مشتري',
     seller: 'بائع',
     alreadyHaveAccount: 'لديك حساب بالفعل؟',
+    passwordMinLength: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+    registrationFailed: 'فشل التسجيل',
+    registrationFailedTryAgain: 'فشل التسجيل. يرجى المحاولة مرة أخرى.',
 
     // Marketplace
     timberMarketplace: 'سوق الأخشاب',
