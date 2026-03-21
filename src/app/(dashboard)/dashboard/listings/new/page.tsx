@@ -117,23 +117,30 @@ export default function NewListingPage() {
     };
 
     try {
+      console.log('📤 Submitting listing:', listingData);
+
       const response = await fetch('/api/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(listingData),
       });
 
-      const data = await response.json();
+      const result = await response.json();
+      console.log('📥 API Response:', response.status, result);
 
       if (!response.ok) {
-        setSubmitError(data.error || 'Failed to create listing');
+        const errorMsg = result.error || result.details || 'Failed to create listing';
+        console.error('❌ API Error:', errorMsg);
+        setSubmitError(errorMsg);
         setLoading(false);
         return;
       }
 
+      console.log('✅ Success:', result);
+      alert('Listing created successfully!');
       router.push('/dashboard/listings');
     } catch (err) {
-      console.error('Submit error:', err);
+      console.error('❌ Submit error:', err);
       setSubmitError('Failed to create listing. Please try again.');
       setLoading(false);
     }

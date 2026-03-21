@@ -97,35 +97,61 @@ export async function GET(request: NextRequest) {
 
 // POST /api/listings - Create a new listing
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-
-  // Check authentication
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // Check if user is a seller
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'seller' && profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Only sellers can create listings' }, { status: 403 });
-  }
-
   try {
+    const supabase = await createClient();
     const body = await request.json();
 
+    // Validate required fields
+    const requiredFields = ['title', 'country_origin', 'price', 'wood_type', 'category', 'unit', 'quantity'];
+    for (const field of requiredFields) {
+      if (!body[field]) {
+        return NextResponse.json(
+          { error: `Missing required field: ${field}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Check authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error('❌ Auth Error:', authError);
+      return NextResponse.json(
+        { error: 'Unauthorized - Please login' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user is a seller
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      console.error('❌ Profile Error:', profileError);
+      return NextResponse.json(
+        { error: 'Failed to verify user role', details: profileError.message },
+        { status: 500 }
+      );
+    }
+
+    if (profile?.role !== 'seller' && profile?.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only sellers can create listings' },
+        { status: 403 }
+      );
+    }
+
+    // Insert listing
     const { data, error } = await supabase
       .from('listings')
       .insert({
         seller_id: user.id,
-        listing_type: body.listing_type,
+        listing_type: body.listing_type || 'timber',
         title: body.title,
-        description: body.description,
+        description: body.description || '',
         wood_type: body.wood_type,
         category: body.category,
         price: body.price,
@@ -141,11 +167,21 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      console.error('❌ Supabase Insert Error:', error);
+      return NextResponse.json(
+        { error: error.message, details: error },
+        { status: 500 }
+      );
     }
 
+    console.log('✅ Listing created successfully:', data.id);
     return NextResponse.json(data, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+
+  } catch (error) {
+    console.error('❌ API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 }
