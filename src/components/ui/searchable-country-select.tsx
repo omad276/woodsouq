@@ -1,8 +1,15 @@
 'use client';
 
 import { useMemo } from 'react';
-import Select from 'react-select';
+import dynamic from 'next/dynamic';
 import { COUNTRIES } from '@/types';
+
+const Select = dynamic(() => import('react-select'), { ssr: false });
+
+interface CountryOption {
+  value: string;
+  label: string;
+}
 
 interface SearchableCountrySelectProps {
   value?: string;
@@ -19,9 +26,9 @@ export function SearchableCountrySelect({
   name,
   required,
 }: SearchableCountrySelectProps) {
-  const countryOptions = useMemo(
+  const countryOptions: CountryOption[] = useMemo(
     () =>
-      COUNTRIES.map((country) => ({
+      [...COUNTRIES].map((country) => ({
         value: country,
         label: country,
       })),
@@ -29,7 +36,7 @@ export function SearchableCountrySelect({
   );
 
   const selectedOption = value
-    ? countryOptions.find((opt) => opt.value === value)
+    ? countryOptions.find((opt) => opt.value === value) || null
     : null;
 
   return (
@@ -45,39 +52,23 @@ export function SearchableCountrySelect({
       <Select
         options={countryOptions}
         value={selectedOption}
-        onChange={(option) => onValueChange?.(option?.value || '')}
+        onChange={(option: unknown) => {
+          const selected = option as CountryOption | null;
+          onValueChange?.(selected?.value || '');
+        }}
         placeholder={placeholder}
         isClearable
         isSearchable
-        classNames={{
-          control: () =>
-            'h-9 rounded-md border border-input bg-transparent text-sm shadow-sm',
-          placeholder: () => 'text-muted-foreground',
-          input: () => 'text-sm',
-          menu: () => 'rounded-md border bg-popover shadow-lg',
-          option: ({ isFocused, isSelected }) =>
-            `px-2 py-1.5 text-sm cursor-pointer ${
-              isSelected
-                ? 'bg-accent text-accent-foreground'
-                : isFocused
-                ? 'bg-accent/50'
-                : ''
-            }`,
-        }}
+        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         styles={{
-          control: (base) => ({
+          control: (base: Record<string, unknown>) => ({
             ...base,
             minHeight: '36px',
-            backgroundColor: 'transparent',
-            borderColor: 'hsl(var(--input))',
+            fontSize: '14px',
           }),
-          menu: (base) => ({
+          menuPortal: (base: Record<string, unknown>) => ({
             ...base,
-            zIndex: 50,
-          }),
-          option: (base) => ({
-            ...base,
-            backgroundColor: undefined,
+            zIndex: 9999,
           }),
         }}
       />
