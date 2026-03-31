@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Noto_Sans_Arabic } from "next/font/google";
+import Script from "next/script";
 import { AuthProvider } from "@/components/auth";
 import { LanguageProvider } from "@/lib/i18n";
 import "./globals.css";
@@ -19,7 +20,7 @@ const notoArabic = Noto_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "TimberLink - Global Timber Marketplace",
+  title: "WoodSouq - Global Wood Marketplace",
   description: "B2B and B2C platform for the timber industry. Connect with suppliers, manufacturers, designers, and buyers worldwide.",
   keywords: ["timber", "wood", "lumber", "marketplace", "B2B", "wholesale", "hardwood", "softwood"],
 };
@@ -31,6 +32,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-WHB52EQNWF"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-WHB52EQNWF');
+          `}
+        </Script>
+      </head>
       <body className={`${geist.variable} ${notoArabic.variable} antialiased`}>
         <LanguageProvider>
           <AuthProvider>
