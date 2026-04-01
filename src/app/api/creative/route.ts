@@ -13,7 +13,9 @@ export async function GET() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Return empty array if table doesn't exist yet
+    console.error('Creative posts error:', error.message);
+    return NextResponse.json([]);
   }
 
   // Get comments count for each post
