@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/auth';
 import { Button } from '@/components/ui/button';
 import {
-  TreePine,
   LayoutDashboard,
   Package,
   PlusCircle,
@@ -14,14 +13,8 @@ import {
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const sidebarLinks = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, sellerOnly: false },
-  { href: '/dashboard/listings', label: 'My Listings', icon: Package, sellerOnly: true },
-  { href: '/dashboard/listings/new', label: 'Add Listing', icon: PlusCircle, sellerOnly: true },
-  { href: '/dashboard/inquiries', label: 'Inquiries', icon: MessageSquare, sellerOnly: true },
-  { href: '/dashboard/profile', label: 'Profile', icon: User, sellerOnly: false },
-];
+import { WoodSouqLogo } from '@/components/ui/woodsouq-logo';
+import { useLanguage } from '@/lib/i18n';
 
 export default function DashboardLayout({
   children,
@@ -30,6 +23,15 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const { profile, signOut } = useAuth();
+  const { t } = useLanguage();
+
+  const sidebarLinks = [
+    { href: '/dashboard', label: t('overview'), icon: LayoutDashboard, sellerOnly: false },
+    { href: '/dashboard/listings', label: t('myListings'), icon: Package, sellerOnly: true },
+    { href: '/dashboard/listings/new', label: t('addListing'), icon: PlusCircle, sellerOnly: true },
+    { href: '/dashboard/inquiries', label: t('inquiries'), icon: MessageSquare, sellerOnly: true },
+    { href: '/dashboard/profile', label: t('profile'), icon: User, sellerOnly: false },
+  ];
 
   // Filter links based on user role
   const visibleLinks = sidebarLinks.filter(
@@ -42,9 +44,8 @@ export default function DashboardLayout({
       <aside className="w-64 bg-white border-r border-border hidden md:flex md:flex-col">
         {/* Logo */}
         <div className="p-4 border-b border-border">
-          <Link href="/" className="flex items-center gap-2">
-            <TreePine className="h-8 w-8 text-wood" />
-            <span className="text-xl font-bold text-wood-dark">TimberLink</span>
+          <Link href="/">
+            <WoodSouqLogo size="md" />
           </Link>
         </div>
 
@@ -90,7 +91,7 @@ export default function DashboardLayout({
             onClick={() => signOut()}
           >
             <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+            {t('signOut')}
           </Button>
         </div>
       </aside>
@@ -100,9 +101,8 @@ export default function DashboardLayout({
         {/* Mobile Header */}
         <header className="md:hidden bg-white border-b border-border p-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <TreePine className="h-8 w-8 text-wood" />
-              <span className="text-xl font-bold text-wood-dark">TimberLink</span>
+            <Link href="/">
+              <WoodSouqLogo size="md" />
             </Link>
           </div>
         </header>

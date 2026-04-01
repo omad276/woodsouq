@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Search, Mail, Check, Clock, Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/auth';
 import { createClient } from '@/lib/supabase/client';
+import { useLanguage } from '@/lib/i18n';
 
 interface Inquiry {
   id: string;
@@ -26,6 +27,7 @@ interface Inquiry {
 
 export default function InquiriesPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -52,7 +54,7 @@ export default function InquiriesPage() {
         } else {
           const formattedData = (data || []).map((inq) => ({
             ...inq,
-            listing_title: inq.listing?.title || 'General Inquiry',
+            listing_title: inq.listing?.title || t('generalInquiry'),
           }));
           setInquiries(formattedData);
         }
@@ -100,9 +102,9 @@ export default function InquiriesPage() {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
 
-    if (hours < 1) return 'Just now';
-    if (hours < 24) return `${hours} hours ago`;
-    if (days < 7) return `${days} days ago`;
+    if (hours < 1) return t('justNow');
+    if (hours < 24) return `${hours} ${t('hoursAgo')}`;
+    if (days < 7) return `${days} ${t('daysAgo')}`;
     return date.toLocaleDateString();
   };
 
@@ -117,9 +119,9 @@ export default function InquiriesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-wood-dark">Inquiries</h1>
+        <h1 className="text-2xl font-bold text-wood-dark">{t('inquiries')}</h1>
         <p className="text-muted-foreground">
-          Manage contact inquiries from potential buyers
+          {t('manageInquiries')}
         </p>
       </div>
 
@@ -130,16 +132,16 @@ export default function InquiriesPage() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">
-                  All Inquiries
+                  {t('allInquiries')}
                   {unreadCount > 0 && (
-                    <Badge className="ml-2 bg-wood">{unreadCount} new</Badge>
+                    <Badge className="ml-2 bg-wood">{unreadCount} {t('new')}</Badge>
                   )}
                 </CardTitle>
               </div>
               <div className="relative mt-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search inquiries..."
+                  placeholder={t('searchInquiriesPlaceholder')}
                   className="pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -150,7 +152,7 @@ export default function InquiriesPage() {
               {filteredInquiries.length === 0 ? (
                 <div className="p-8 text-center">
                   <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No inquiries yet</p>
+                  <p className="text-muted-foreground">{t('noInquiriesYetShort')}</p>
                 </div>
               ) : (
                 <div className="divide-y max-h-[600px] overflow-y-auto">
@@ -215,7 +217,7 @@ export default function InquiriesPage() {
               <CardContent className="space-y-6">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">
-                    Regarding:
+                    {t('regarding')}:
                   </p>
                   <Badge variant="outline">{selectedInquiry.listing_title}</Badge>
                 </div>
@@ -224,7 +226,7 @@ export default function InquiriesPage() {
 
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">
-                    Message:
+                    {t('message')}:
                   </p>
                   <p className="text-foreground whitespace-pre-line">
                     {selectedInquiry.message}
@@ -239,12 +241,12 @@ export default function InquiriesPage() {
                     onClick={() => window.location.href = `mailto:${selectedInquiry.sender_email}`}
                   >
                     <Mail className="mr-2 h-4 w-4" />
-                    Reply via Email
+                    {t('replyViaEmail')}
                   </Button>
                   {!selectedInquiry.is_read && (
                     <Button variant="outline" onClick={() => markAsRead(selectedInquiry.id)}>
                       <Check className="mr-2 h-4 w-4" />
-                      Mark as Read
+                      {t('markAsRead')}
                     </Button>
                   )}
                 </div>
@@ -255,7 +257,7 @@ export default function InquiriesPage() {
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <Mail className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
-                  Select an inquiry to view details
+                  {t('selectInquiryToView')}
                 </p>
               </CardContent>
             </Card>

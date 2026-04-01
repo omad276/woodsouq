@@ -94,17 +94,17 @@ export function ContactSellerDialog({
           <DialogTitle>{t('sendInquiry')}</DialogTitle>
           <DialogDescription>
             {listingTitle
-              ? `Send a message about "${listingTitle}"${sellerName ? ` to ${sellerName}` : ''}`
-              : `Contact ${sellerName || 'seller'} with your inquiry`}
+              ? `${t('sendMessageAbout')} "${listingTitle}"${sellerName ? ` ${t('to')} ${sellerName}` : ''}`
+              : t('contactSellerWith')}
           </DialogDescription>
         </DialogHeader>
 
         {success ? (
           <div className="py-8 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold">Inquiry Sent!</h3>
+            <h3 className="text-lg font-semibold">{t('inquirySent')}</h3>
             <p className="text-muted-foreground mt-2">
-              The seller will receive your message via email and can respond directly.
+              {t('inquirySuccessMessage')}
             </p>
           </div>
         ) : (
@@ -140,12 +140,12 @@ export function ContactSellerDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message">Message *</Label>
+              <Label htmlFor="message">{t('messageRequired')} *</Label>
               <Textarea
                 id="message"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder={`Hi, I'm interested in ${listingTitle ? `"${listingTitle}"` : 'your products'}. I would like to know more about...`}
+                placeholder={t('messagePlaceholder')}
                 rows={5}
                 required
               />

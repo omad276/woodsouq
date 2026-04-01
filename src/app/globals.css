@@ -45,13 +45,13 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  /* TimberLink custom colors */
+  /* WoodSouq custom colors */
   --color-wood: #8B5A2B;
   --color-wood-dark: #5C3A1E;
   --color-wood-accent: #C89B6D;
 }
 
-/* TimberLink Theme - Industrial Minimal + Natural Wood */
+/* WoodSouq Theme - Industrial Minimal + Natural Wood */
 :root {
   /* Primary Wood #8B5A2B */
   --primary: #8B5A2B;
@@ -124,7 +124,7 @@
   }
 }
 
-/* Custom utility classes for TimberLink */
+/* Custom utility classes for WoodSouq */
 @layer utilities {
   .text-wood {
     color: #8B5A2B;

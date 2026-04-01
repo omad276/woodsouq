@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { TreePine } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
+import { WoodSouqLogo } from '@/components/ui/woodsouq-logo';
 
 export function Footer() {
   const { t } = useLanguage();
@@ -13,9 +13,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <TreePine className="h-8 w-8 text-wood" />
-              <span className="text-xl font-bold text-wood-dark">TimberLink</span>
+            <Link href="/" className="inline-block mb-4">
+              <WoodSouqLogo size="md" />
             </Link>
             <p className="text-sm text-muted-foreground">
               {t('footerDescription')}
@@ -91,7 +90,7 @@ export function Footer() {
 
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} TimberLink. {t('allRightsReserved')}
+            &copy; {new Date().getFullYear()} WoodSouq. {t('allRightsReserved')}
           </p>
         </div>
       </div>

@@ -1,0 +1,78 @@
+import { createClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let hasLiked = false;
+  if (user) {
+    const { data: like } = await supabase
+      .from('creative_likes')
+      .select('id')
+      .eq('post_id', id)
+      .eq('user_id', user.id)
+      .single();
+
+    hasLiked = !!like;
+  }
+
+  return NextResponse.json({ hasLiked });
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check if already liked
+  const { data: existingLike } = await supabase
+    .from('creative_likes')
+    .select('id')
+    .eq('post_id', id)
+    .eq('user_id', user.id)
+    .single();
+
+  if (existingLike) {
+    // Unlike
+    await supabase
+      .from('creative_likes')
+      .delete()
+      .eq('post_id', id)
+      .eq('user_id', user.id);
+
+    // Decrement likes_count
+    await supabase.rpc('decrement_likes', { post_id: id });
+
+    return NextResponse.json({ liked: false });
+  } else {
+    // Like
+    const { error } = await supabase
+      .from('creative_likes')
+      .insert({
+        post_id: id,
+        user_id: user.id,
+      });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Increment likes_count
+    await supabase.rpc('increment_likes', { post_id: id });
+
+    return NextResponse.json({ liked: true });
+  }
+}

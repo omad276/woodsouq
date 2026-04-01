@@ -12,7 +12,7 @@ import {
 import type { Listing } from '@/types';
 
 export const metadata = {
-  title: 'Wood Products - TimberLink',
+  title: 'Wood Products - WoodSouq',
   description: 'Browse finished wood products - furniture, flooring, doors, panels, and more from trusted manufacturers.',
 };
 

@@ -48,8 +48,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
+    const preloadT = (key: TranslationKey): string => {
+      const value = translations.en[key];
+      return typeof value === 'string' ? value : String(key);
+    };
     return (
-      <LanguageContext.Provider value={{ language: 'en', setLanguage, t: (key) => translations.en[key] || key, isRTL: false }}>
+      <LanguageContext.Provider value={{ language: 'en', setLanguage, t: preloadT, isRTL: false }}>
         {children}
       </LanguageContext.Provider>
     );

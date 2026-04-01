@@ -40,10 +40,10 @@ export async function sendInquiryEmail({
   try {
     const subject = listingTitle
       ? `New inquiry about: ${listingTitle}`
-      : 'New inquiry on TimberLink';
+      : 'New inquiry on WoodSouq';
 
     const { error } = await client.emails.send({
-      from: 'TimberLink <onboarding@resend.dev>',
+      from: 'WoodSouq <onboarding@resend.dev>',
       to: sellerEmail,
       replyTo: senderEmail,
       subject,
@@ -65,12 +65,12 @@ export async function sendInquiryEmail({
         <body>
           <div class="container">
             <div class="header">
-              <h1 style="margin: 0;">🌲 TimberLink</h1>
+              <h1 style="margin: 0;">🌲 WoodSouq</h1>
               <p style="margin: 5px 0 0;">New Inquiry Received</p>
             </div>
             <div class="content">
               <p>Hello ${sellerName},</p>
-              <p>You have received a new inquiry${listingTitle ? ` about <strong>"${listingTitle}"</strong>` : ''} on TimberLink.</p>
+              <p>You have received a new inquiry${listingTitle ? ` about <strong>"${listingTitle}"</strong>` : ''} on WoodSouq.</p>
 
               <div class="message-box">
                 <p class="info"><strong>From:</strong> ${senderName}</p>
@@ -84,7 +84,7 @@ export async function sendInquiryEmail({
               <a href="https://timberlink.org/dashboard/inquiries" class="cta">View All Inquiries</a>
 
               <div class="footer">
-                <p>This email was sent from TimberLink. Do not reply to noreply@timberlink.org.</p>
+                <p>This email was sent from WoodSouq. Do not reply to noreply@timberlink.org.</p>
                 <p>Instead, reply directly to the sender at ${senderEmail}.</p>
               </div>
             </div>
@@ -95,7 +95,7 @@ export async function sendInquiryEmail({
       text: `
 Hello ${sellerName},
 
-You have received a new inquiry${listingTitle ? ` about "${listingTitle}"` : ''} on TimberLink.
+You have received a new inquiry${listingTitle ? ` about "${listingTitle}"` : ''} on WoodSouq.
 
 From: ${senderName}
 Email: ${senderEmail}

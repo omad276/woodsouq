@@ -7,9 +7,10 @@ import { useAuth } from '@/components/auth';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Menu, X, TreePine } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
 import { LanguageToggle } from './LanguageToggle';
+import { WoodSouqLogo } from '@/components/ui/woodsouq-logo';
 
 export function Header() {
   const { user, loading } = useAuth();
@@ -29,6 +30,7 @@ export function Header() {
     { href: '/marketplace', label: t('marketplace') },
     { href: '/products', label: t('woodProducts') },
     { href: '/suppliers', label: t('suppliers') },
+    { href: '/creative', label: t('creative') },
   ];
 
   return (
@@ -36,9 +38,8 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <TreePine className="h-8 w-8 text-wood" />
-            <span className="text-xl font-bold text-wood-dark">TimberLink</span>
+          <Link href="/">
+            <WoodSouqLogo size="md" />
           </Link>
 
           {/* Search Bar - Desktop */}
@@ -73,10 +74,10 @@ export function Header() {
               <UserMenu />
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" className="text-foreground" asChild>
                   <Link href="/login">{t('login')}</Link>
                 </Button>
-                <Button className="bg-wood hover:bg-wood-dark" asChild>
+                <Button className="bg-wood hover:bg-wood-dark text-white" asChild>
                   <Link href="/register">{t('signUp')}</Link>
                 </Button>
               </div>
@@ -125,7 +126,37 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
-              {!user && (
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="px-2 py-2 text-sm font-medium text-foreground hover:text-wood"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('dashboard')}
+                  </Link>
+                  <Link
+                    href="/dashboard/profile"
+                    className="px-2 py-2 text-sm font-medium text-foreground hover:text-wood"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('profile')}
+                  </Link>
+                  <button
+                    className="px-2 py-2 text-sm font-medium text-red-600 hover:text-red-700 text-left"
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      const { createClient } = await import('@/lib/supabase/client');
+                      const supabase = createClient();
+                      await supabase.auth.signOut();
+                      router.push('/');
+                      router.refresh();
+                    }}
+                  >
+                    {t('signOut')}
+                  </button>
+                </>
+              ) : (
                 <>
                   <Link
                     href="/login"

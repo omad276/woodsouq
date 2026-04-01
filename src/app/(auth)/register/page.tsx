@@ -1,8 +1,8 @@
 import { RegisterForm } from '@/components/auth';
 
 export const metadata = {
-  title: 'Create Account - TimberLink',
-  description: 'Join TimberLink - the global timber marketplace',
+  title: 'Create Account - WoodSouq',
+  description: 'Join WoodSouq - the global wood marketplace',
 };
 
 export default function RegisterPage() {

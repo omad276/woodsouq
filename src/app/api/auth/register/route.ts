@@ -1,14 +1,26 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+function getSupabaseAdmin(): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return null;
+  }
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
     const { email, password, name, role } = await request.json();
 
     if (!email || !password || !name) {
@@ -19,33 +31,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
     }
 
+    const userRole = role || 'buyer';
+
+    // Clean up any orphaned profile first (from previous failed registrations)
+    const { error: deleteError } = await supabaseAdmin
+      .from('profiles')
+      .delete()
+      .eq('email', email);
+
+    if (deleteError) {
+      console.log('Profile cleanup error (may be ok if no orphan exists):', deleteError.message);
+    }
+
     // Create auth user
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { name, role: role || 'buyer' }
+      user_metadata: { name, role: userRole }
     });
 
-    console.log('authError:', authError);
     if (authError) {
-      return NextResponse.json({ error: authError.message }, { status: 400 });
+      // Return the actual error message for debugging
+      return NextResponse.json({
+        error: `Registration failed: ${authError.message}`
+      }, { status: 400 });
     }
 
-    // Insert profile directly
-    const { error: profileError } = await supabaseAdmin.from('profiles').insert({
-      id: authData.user.id,
-      name,
-      email,
-      role: role || 'buyer',
-      is_verified: false,
-      created_at: new Date().toISOString()
-    });
+    if (!authData?.user) {
+      return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
+    }
 
-    if (profileError) {
-      // Rollback: delete auth user if profile insert fails
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-      return NextResponse.json({ error: 'Failed to create profile: ' + profileError.message }, { status: 500 });
+    // Verify profile was created by trigger, if not create it manually
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('id', authData.user.id)
+      .single();
+
+    if (!profile) {
+      // Trigger didn't create profile, create manually
+      const { error: profileError } = await supabaseAdmin.from('profiles').insert({
+        id: authData.user.id,
+        name,
+        email,
+        role: userRole,
+        is_verified: false
+      });
+
+      if (profileError) {
+        // Rollback: delete auth user
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+        return NextResponse.json({
+          error: 'Failed to create user profile. Please try again.'
+        }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ success: true, user: authData.user });

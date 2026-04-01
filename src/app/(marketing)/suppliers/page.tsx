@@ -3,7 +3,7 @@ import { SuppliersContent } from '@/components/suppliers/SuppliersContent';
 import type { Supplier } from '@/types';
 
 export const metadata = {
-  title: 'Supplier Directory - TimberLink',
+  title: 'Supplier Directory - WoodSouq',
   description: 'Find verified timber and wood product suppliers from around the world.',
 };
 

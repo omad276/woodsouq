@@ -3,7 +3,7 @@ import { MarketplaceContent } from '@/components/marketplace/MarketplaceContent'
 import type { Listing } from '@/types';
 
 export const metadata = {
-  title: 'Timber Marketplace - TimberLink',
+  title: 'Timber Marketplace - WoodSouq',
   description: 'Browse and buy timber from verified suppliers worldwide. Find hardwood, softwood, plywood, logs, and more.',
 };
 

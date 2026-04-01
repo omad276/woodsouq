@@ -95,25 +95,25 @@ export default function DashboardPage() {
       title: t('totalListings'),
       value: loading ? '...' : stats.totalListings.toString(),
       icon: Package,
-      description: loading ? '' : `${stats.activeListings} active, ${stats.draftListings} draft, ${stats.soldListings} sold`,
+      description: loading ? '' : `${stats.activeListings} ${t('active')}, ${stats.draftListings} ${t('draft')}, ${stats.soldListings} ${t('sold')}`,
     },
     {
       title: t('activeListings'),
       value: loading ? '...' : stats.activeListings.toString(),
       icon: CheckCircle,
-      description: loading ? '' : 'Currently visible to buyers',
+      description: loading ? '' : t('visibleToBuyers'),
     },
     {
       title: t('inquiries'),
       value: loading ? '...' : stats.totalInquiries.toString(),
       icon: MessageSquare,
-      description: loading ? '' : `${stats.unreadInquiries} unread`,
+      description: loading ? '' : `${stats.unreadInquiries} ${t('unread')}`,
     },
     {
       title: t('conversionRate'),
       value: loading ? '...' : `${responseRate}%`,
       icon: TrendingUp,
-      description: loading ? '' : 'Response rate',
+      description: loading ? '' : t('responseRate'),
     },
   ];
 
@@ -126,9 +126,9 @@ export default function DashboardPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 60) return `${diffMins} minutes ago`;
-    if (diffHours < 24) return `${diffHours} hours ago`;
-    return `${diffDays} days ago`;
+    if (diffMins < 60) return `${diffMins} ${t('minutesAgo')}`;
+    if (diffHours < 24) return `${diffHours} ${t('hoursAgo')}`;
+    return `${diffDays} ${t('daysAgo')}`;
   };
 
   return (
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             </div>
           ) : recentInquiries.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              No inquiries yet. Your inquiries will appear here.
+              {t('noInquiriesYet')}
             </div>
           ) : (
             <div className="space-y-4">
@@ -193,7 +193,7 @@ export default function DashboardPage() {
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Re: {inquiry.listing?.title || 'General Inquiry'}
+                      {t('re')} {inquiry.listing?.title || t('generalInquiry')}
                     </p>
                     <p className="text-sm text-foreground mt-1 line-clamp-1">
                       {inquiry.message}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { TreePine } from 'lucide-react';
+import { WoodSouqLogo } from '@/components/ui/woodsouq-logo';
 
 export default function AuthLayout({
   children,
@@ -8,9 +8,8 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <Link href="/" className="flex items-center gap-2 mb-8">
-        <TreePine className="h-10 w-10 text-wood" />
-        <span className="text-2xl font-bold text-wood-dark">TimberLink</span>
+      <Link href="/" className="mb-8">
+        <WoodSouqLogo size="lg" />
       </Link>
       {children}
     </div>

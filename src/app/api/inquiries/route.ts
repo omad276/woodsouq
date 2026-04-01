@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { createClient as createAdminClient, SupabaseClient } from '@supabase/supabase-js';
 import { sendInquiryEmail } from '@/lib/email';
 
-// Admin client for fetching seller info
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+function getSupabaseAdmin(): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return null;
+  }
+  return createAdminClient(supabaseUrl, supabaseServiceKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
+}
 
 // GET /api/inquiries - List inquiries for the authenticated seller
 export async function GET() {
@@ -39,6 +44,11 @@ export async function GET() {
 // POST /api/inquiries - Create a new inquiry and send email notification
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
+  const supabaseAdmin = getSupabaseAdmin();
+
+  if (!supabaseAdmin) {
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
 
   try {
     const body = await request.json();

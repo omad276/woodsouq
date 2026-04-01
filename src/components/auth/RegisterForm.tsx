@@ -50,8 +50,16 @@ export function RegisterForm() {
       }
 
       // Auto sign in after registration
-      await supabase.auth.signInWithPassword({ email, password });
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
+
       router.push('/dashboard');
+      router.refresh();
     } catch {
       setError(t('registrationFailedTryAgain'));
       setLoading(false);
@@ -63,7 +71,7 @@ export function RegisterForm() {
       <CardHeader className="text-center">
         <CardTitle className="text-2xl text-wood-dark">{t('createAccount')}</CardTitle>
         <CardDescription>
-          {t('joinTimberLink')}
+          {t('joinWoodSouq')}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>

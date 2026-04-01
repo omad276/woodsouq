@@ -63,7 +63,7 @@ export function FilterSidebar({ type }: FilterSidebarProps) {
             <SelectItem value="all">{t('allCategories')}</SelectItem>
             {categories.map((cat) => (
               <SelectItem key={cat} value={cat}>
-                {cat}
+                {t(`category_${cat}` as keyof typeof import('@/lib/i18n/translations').translations.en)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -84,7 +84,7 @@ export function FilterSidebar({ type }: FilterSidebarProps) {
             <SelectItem value="all">{t('allTypes')}</SelectItem>
             {WOOD_TYPES.map((wood) => (
               <SelectItem key={wood} value={wood}>
-                {wood}
+                {t(`woodType_${wood}` as keyof typeof import('@/lib/i18n/translations').translations.en)}
               </SelectItem>
             ))}
           </SelectContent>

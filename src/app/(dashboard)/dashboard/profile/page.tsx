@@ -15,9 +15,11 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { useLanguage } from '@/lib/i18n';
 
 export default function ProfilePage() {
   const { profile, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [saving, setSaving] = useState(false);
@@ -45,7 +47,7 @@ export default function ProfilePage() {
     if (updateError) {
       setError(updateError.message);
     } else {
-      setMessage('Profile updated successfully');
+      setMessage(t('profileUpdated'));
       // Reload page to refresh auth context
       setTimeout(() => window.location.reload(), 1000);
     }
@@ -64,14 +66,14 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-wood-dark">Profile</h1>
-        <p className="text-muted-foreground">View and edit your profile information</p>
+        <h1 className="text-2xl font-bold text-wood-dark">{t('profileTitle')}</h1>
+        <p className="text-muted-foreground">{t('viewEditProfile')}</p>
       </div>
 
       <Card className="max-w-lg">
         <CardHeader>
-          <CardTitle>Your Information</CardTitle>
-          <CardDescription>Update your name and role</CardDescription>
+          <CardTitle>{t('yourInformation')}</CardTitle>
+          <CardDescription>{t('updateNameRole')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,7 +89,7 @@ export default function ProfilePage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -95,11 +97,11 @@ export default function ProfilePage() {
                 disabled
                 className="bg-muted"
               />
-              <p className="text-xs text-muted-foreground">Email cannot be changed</p>
+              <p className="text-xs text-muted-foreground">{t('emailCannotChange')}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">{t('name')}</Label>
               <Input
                 id="name"
                 type="text"
@@ -110,14 +112,14 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="role">{t('role')}</Label>
               <Select value={role} onValueChange={setRole}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="buyer">Buyer</SelectItem>
-                  <SelectItem value="seller">Seller</SelectItem>
+                  <SelectItem value="buyer">{t('buyer')}</SelectItem>
+                  <SelectItem value="seller">{t('seller')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -128,7 +130,7 @@ export default function ProfilePage() {
               disabled={saving}
             >
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
+              {t('saveChanges')}
             </Button>
           </form>
         </CardContent>

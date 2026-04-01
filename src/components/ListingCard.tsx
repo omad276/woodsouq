@@ -34,7 +34,9 @@ export function ListingCard({ listing }: ListingCardProps) {
             className={`absolute top-2 bg-wood hover:bg-wood ${isRTL ? 'right-2' : 'left-2'}`}
             variant="secondary"
           >
-            {listing.category || listing.wood_type}
+            {listing.category
+              ? t(`category_${listing.category}` as keyof typeof import('@/lib/i18n/translations').translations.en)
+              : t(`woodType_${listing.wood_type}` as keyof typeof import('@/lib/i18n/translations').translations.en)}
           </Badge>
         </div>
         <CardContent className="p-4">

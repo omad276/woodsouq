@@ -27,10 +27,12 @@ import {
   GRADES,
   type ListingType,
 } from '@/types';
+import { useLanguage } from '@/lib/i18n';
 
 export default function NewListingPage() {
   const router = useRouter();
   const { profile, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [listingType, setListingType] = useState<ListingType>('timber');
   const [images, setImages] = useState<string[]>([]);
@@ -75,27 +77,27 @@ export default function NewListingPage() {
     const quantity = formData.get('quantity') as string;
 
     if (!title || !description || !price || !quantity) {
-      setSubmitError('Please fill in all required fields');
+      setSubmitError(t('fillRequiredFields'));
       return;
     }
 
     if (!woodType) {
-      setSubmitError('Please select a wood type');
+      setSubmitError(t('pleaseSelectWoodType'));
       return;
     }
 
     if (!category) {
-      setSubmitError('Please select a category');
+      setSubmitError(t('pleaseSelectCategory'));
       return;
     }
 
     if (!unit) {
-      setSubmitError('Please select a unit');
+      setSubmitError(t('pleaseSelectUnit'));
       return;
     }
 
     if (!countryOrigin) {
-      setSubmitError('Please select a country of origin');
+      setSubmitError(t('pleaseSelectCountry'));
       return;
     }
 
@@ -137,11 +139,11 @@ export default function NewListingPage() {
       }
 
       console.log('✅ Success:', result);
-      alert('Listing created successfully!');
+      alert(t('listingCreatedSuccess'));
       router.push('/dashboard/listings');
     } catch (err) {
       console.error('❌ Submit error:', err);
-      setSubmitError('Failed to create listing. Please try again.');
+      setSubmitError(t('failedToCreateListing'));
       setLoading(false);
     }
   };
@@ -200,9 +202,9 @@ export default function NewListingPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-wood-dark">Add New Listing</h1>
+          <h1 className="text-2xl font-bold text-wood-dark">{t('addNewListingTitle')}</h1>
           <p className="text-muted-foreground">
-            Create a new timber or wood product listing
+            {t('createNewListingSubtitle')}
           </p>
         </div>
       </div>
@@ -214,11 +216,11 @@ export default function NewListingPage() {
             {/* Basic Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle>{t('basicInformation')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="listing_type">Listing Type</Label>
+                  <Label htmlFor="listing_type">{t('listingType')}</Label>
                   <Select
                     value={listingType}
                     onValueChange={(v) => setListingType(v as ListingType)}
@@ -227,28 +229,28 @@ export default function NewListingPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="timber">Timber / Raw Material</SelectItem>
-                      <SelectItem value="wood_product">Finished Wood Product</SelectItem>
+                      <SelectItem value="timber">{t('timberRawMaterial')}</SelectItem>
+                      <SelectItem value="wood_product">{t('finishedWoodProduct')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">{t('title')}</Label>
                   <Input
                     id="title"
                     name="title"
-                    placeholder="e.g., Premium Oak Lumber - Kiln Dried"
+                    placeholder={t('titlePlaceholder')}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('description')}</Label>
                   <Textarea
                     id="description"
                     name="description"
-                    placeholder="Describe your product in detail..."
+                    placeholder={t('descriptionPlaceholder')}
                     rows={5}
                     required
                   />
@@ -256,15 +258,15 @@ export default function NewListingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="wood_type">Wood Type</Label>
+                    <Label htmlFor="wood_type">{t('woodType')}</Label>
                     <Select value={woodType} onValueChange={setWoodType} required>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select wood type" />
+                        <SelectValue placeholder={t('selectWoodType')} />
                       </SelectTrigger>
                       <SelectContent>
                         {WOOD_TYPES.map((wood) => (
                           <SelectItem key={wood} value={wood}>
-                            {wood}
+                            {t(`woodType_${wood}` as keyof typeof import('@/lib/i18n/translations').translations.en)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -272,15 +274,15 @@ export default function NewListingPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">{t('category')}</Label>
                     <Select value={category} onValueChange={setCategory} required>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder={t('selectCategory')} />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
                           <SelectItem key={cat} value={cat}>
-                            {cat}
+                            {t(`category_${cat}` as keyof typeof import('@/lib/i18n/translations').translations.en)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -293,12 +295,12 @@ export default function NewListingPage() {
             {/* Pricing & Quantity */}
             <Card>
               <CardHeader>
-                <CardTitle>Pricing & Quantity</CardTitle>
+                <CardTitle>{t('pricingQuantity')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price (USD)</Label>
+                    <Label htmlFor="price">{t('priceUSD')}</Label>
                     <Input
                       id="price"
                       name="price"
@@ -311,7 +313,7 @@ export default function NewListingPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantity</Label>
+                    <Label htmlFor="quantity">{t('quantity')}</Label>
                     <Input
                       id="quantity"
                       name="quantity"
@@ -324,10 +326,10 @@ export default function NewListingPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="unit">Unit</Label>
+                    <Label htmlFor="unit">{t('unit')}</Label>
                     <Select value={unit} onValueChange={setUnit} required>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select unit" />
+                        <SelectValue placeholder={t('selectUnit')} />
                       </SelectTrigger>
                       <SelectContent>
                         {UNITS.map((u) => (
@@ -345,15 +347,15 @@ export default function NewListingPage() {
             {/* Details */}
             <Card>
               <CardHeader>
-                <CardTitle>Additional Details</CardTitle>
+                <CardTitle>{t('additionalDetails')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="country_origin">Country of Origin</Label>
+                    <Label htmlFor="country_origin">{t('countryOfOrigin')}</Label>
                     <SearchableCountrySelect
                       name="country_origin"
-                      placeholder="Search countries..."
+                      placeholder={t('searchCountries')}
                       value={countryOrigin}
                       onValueChange={setCountryOrigin}
                       required
@@ -361,10 +363,10 @@ export default function NewListingPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="grade">Grade (Optional)</Label>
+                    <Label htmlFor="grade">{t('gradeOptional')}</Label>
                     <Select value={grade} onValueChange={setGrade}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select grade" />
+                        <SelectValue placeholder={t('selectGrade')} />
                       </SelectTrigger>
                       <SelectContent>
                         {GRADES.map((g) => (
@@ -382,7 +384,7 @@ export default function NewListingPage() {
             {/* Images */}
             <Card>
               <CardHeader>
-                <CardTitle>Images</CardTitle>
+                <CardTitle>{t('images')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {uploadError && (
@@ -431,13 +433,13 @@ export default function NewListingPage() {
                         <Upload className="h-6 w-6 text-muted-foreground" />
                       )}
                       <span className="text-sm text-muted-foreground">
-                        {uploading ? 'Uploading...' : 'Add Image'}
+                        {uploading ? t('uploading') : t('addImage')}
                       </span>
                     </button>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Upload up to 5 images. First image will be the cover.
+                  {t('uploadInstructions')}
                 </p>
               </CardContent>
             </Card>
@@ -447,18 +449,18 @@ export default function NewListingPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Publish</CardTitle>
+                <CardTitle>{t('publish')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Status</Label>
+                  <Label>{t('status')}</Label>
                   <Select value={status} onValueChange={setStatus}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="active">Active (Publish Now)</SelectItem>
+                      <SelectItem value="draft">{t('draft')}</SelectItem>
+                      <SelectItem value="active">{t('activePublishNow')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -475,7 +477,7 @@ export default function NewListingPage() {
                     disabled={loading}
                   >
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Listing
+                    {t('createListing')}
                   </Button>
                   <Button
                     type="button"
@@ -483,7 +485,7 @@ export default function NewListingPage() {
                     className="w-full"
                     onClick={() => router.back()}
                   >
-                    Cancel
+                    {t('cancel')}
                   </Button>
                 </div>
               </CardContent>
@@ -491,15 +493,15 @@ export default function NewListingPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Tips</CardTitle>
+                <CardTitle>{t('tips')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
-                  <li>• Use clear, descriptive titles</li>
-                  <li>• Add detailed specifications</li>
-                  <li>• Upload high-quality images</li>
-                  <li>• Set competitive pricing</li>
-                  <li>• Specify accurate quantities</li>
+                  <li>• {t('tipClearTitles')}</li>
+                  <li>• {t('tipDetailedSpecs')}</li>
+                  <li>• {t('tipHighQualityImages')}</li>
+                  <li>• {t('tipCompetitivePricing')}</li>
+                  <li>• {t('tipAccurateQuantities')}</li>
                 </ul>
               </CardContent>
             </Card>

@@ -24,6 +24,7 @@ import { PlusCircle, MoreHorizontal, Pencil, Eye, Trash2, Loader2 } from 'lucide
 import type { Listing } from '@/types';
 import { useAuth } from '@/components/auth';
 import { createClient } from '@/lib/supabase/client';
+import { useLanguage } from '@/lib/i18n';
 
 const statusColors: Record<string, string> = {
   active: 'bg-green-100 text-green-800',
@@ -35,6 +36,7 @@ const statusColors: Record<string, string> = {
 export default function ListingsPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
+  const { t } = useLanguage();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export default function ListingsPage() {
   }, [user]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this listing?')) {
+    if (!confirm(t('confirmDeleteListing'))) {
       return;
     }
     setDeleting(id);
@@ -83,10 +85,10 @@ export default function ListingsPage() {
         setListings(listings.filter((l) => l.id !== id));
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to delete listing');
+        alert(data.error || t('failedToDelete'));
       }
     } catch {
-      alert('Failed to delete listing');
+      alert(t('failedToDelete'));
     } finally {
       setDeleting(null);
     }
@@ -104,31 +106,31 @@ export default function ListingsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-wood-dark">My Listings</h1>
+          <h1 className="text-2xl font-bold text-wood-dark">{t('myListings')}</h1>
           <p className="text-muted-foreground">
-            Manage your timber and wood product listings
+            {t('manageYourListings')}
           </p>
         </div>
         <Button className="bg-wood hover:bg-wood-dark" asChild>
           <Link href="/dashboard/listings/new">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add Listing
+            {t('addListing')}
           </Link>
         </Button>
       </div>
 
       <Card className="overflow-visible">
         <CardHeader>
-          <CardTitle>All Listings ({listings.length})</CardTitle>
+          <CardTitle>{t('allListings')} ({listings.length})</CardTitle>
         </CardHeader>
         <CardContent className="overflow-visible">
           {listings.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">You don&apos;t have any listings yet.</p>
+              <p className="text-muted-foreground mb-4">{t('noListingsYetDashboard')}</p>
               <Button className="bg-wood hover:bg-wood-dark" asChild>
                 <Link href="/dashboard/listings/new">
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  Create Your First Listing
+                  {t('createFirstListing')}
                 </Link>
               </Button>
             </div>
@@ -136,12 +138,12 @@ export default function ListingsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Views</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>{t('title')}</TableHead>
+                  <TableHead>{t('type')}</TableHead>
+                  <TableHead>{t('price')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('views')}</TableHead>
+                  <TableHead>{t('created')}</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -158,7 +160,7 @@ export default function ListingsPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {listing.listing_type === 'timber' ? 'Timber' : 'Product'}
+                        {listing.listing_type === 'timber' ? t('timber') : t('product')}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -187,14 +189,14 @@ export default function ListingsPage() {
                             onClick={() => router.push(`/marketplace/${listing.id}`)}
                           >
                             <Eye className="mr-2 h-4 w-4" />
-                            View
+                            {t('view')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            {t('edit')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600 cursor-pointer"
@@ -206,7 +208,7 @@ export default function ListingsPage() {
                             ) : (
                               <Trash2 className="mr-2 h-4 w-4" />
                             )}
-                            Delete
+                            {t('delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
