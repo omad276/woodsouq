@@ -34,6 +34,7 @@ export const translations = {
     heroSubtitle: 'Connect with verified suppliers, discover quality timber and wood products from around the world.',
     browseListings: 'Browse Listings',
     becomeSupplier: 'Become a Supplier',
+    joinAsSupplier: 'Join as Supplier Now',
 
     // Categories
     browseByCategory: 'Browse by Category',
@@ -518,6 +519,7 @@ export const translations = {
     heroSubtitle: 'تواصل مع موردين معتمدين، واكتشف أخشاباً ومنتجات خشبية عالية الجودة من جميع أنحاء العالم.',
     browseListings: 'تصفح القوائم',
     becomeSupplier: 'كن مورداً',
+    joinAsSupplier: 'انضم كمورد الآن',
 
     // Categories
     browseByCategory: 'تصفح حسب الفئة',
