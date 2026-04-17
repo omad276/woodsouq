@@ -2,6 +2,9 @@ export type Language = 'en' | 'ar';
 
 export const translations = {
   en: {
+    // Common
+    home: 'Home',
+
     // Header
     search: 'Search timber, products, suppliers...',
     searchMobile: 'Search...',
@@ -487,6 +490,9 @@ export const translations = {
     termsSection13Content: 'For questions about these Terms of Service, please contact us at:',
   },
   ar: {
+    // Common
+    home: 'الرئيسية',
+
     // Header
     search: 'ابحث عن الأخشاب والمنتجات والموردين...',
     searchMobile: 'بحث...',
